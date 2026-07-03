@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sidratul Muntaha — ML Researcher & Builder</title>
+  <meta name="description" content="Sidratul Muntaha — CSE undergraduate at CUET working on Computer Vision, NLP and multimodal AI. Research, projects, and writing." />
+  <meta property="og:title" content="Sidratul Muntaha — ML Researcher & Builder" />
+  <meta property="og:description" content="Computer Vision · NLP · Multimodal AI · Research with real-world impact" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐈</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <header class="nav" id="nav">
+    <a class="nav-logo" href="#top">SM<span class="accent">.</span></a>
+    <nav class="nav-links" id="nav-links">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact" class="nav-cta">Contact</a>
+    </nav>
+    <button class="nav-burger" id="nav-burger" aria-label="Menu">☰</button>
+  </header>
+
+  <main id="top">
+    <!-- All section content is rendered by js/render.js from the data/ files -->
+    <section class="hero" id="hero"></section>
+    <div class="ticker" id="ticker" aria-hidden="true"></div>
+    <section class="section" id="about"></section>
+    <section class="section" id="research"></section>
+    <section class="section" id="projects"></section>
+    <section class="section" id="experience"></section>
+    <section class="section" id="skills"></section>
+    <section class="section" id="education"></section>
+    <section class="section" id="blog"></section>
+    <section class="section contact" id="contact"></section>
+  </main>
+
+  <footer class="footer" id="footer"></footer>
+
+  <!-- Data (edit these files to update the site — never the code) -->
+  <script src="data/profile.js"></script>
+  <script src="data/projects.js"></script>
+  <script src="data/achievements.js"></script>
+  <script src="data/experience.js"></script>
+  <script src="data/skills.js"></script>
+  <script src="data/blog.js"></script>
+  <!-- Renderer -->
+  <script src="js/render.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# Sidratul Muntaha — Portfolio
+# Sidratul Muntaha — Portfolio ✨
 
 Personal portfolio: bold, data-driven, zero build tools. Pure HTML/CSS/JS — every
 piece of content lives in `data/*.js`, so updating the site never means touching

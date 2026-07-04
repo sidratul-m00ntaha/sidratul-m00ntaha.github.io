@@ -1,11 +1,12 @@
 /* ============================================================
-   Renderer — reads window.DATA (from data/*.js) and builds the
-   page. You should rarely need to touch this file: to change
-   content, edit the files in data/.
+   Renderer — reads window.DATA (from data/*.js) and builds each
+   page. Every section renders only if its container exists, so
+   all pages share this one file. To change content, edit data/.
    ============================================================ */
 (function () {
   const D = window.DATA;
   const $ = (sel) => document.querySelector(sel);
+  const page = document.body.dataset.page || "home";
 
   const esc = (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({
@@ -21,138 +22,246 @@
       <h2 class="section-title">${title}</h2>
     </div>`;
 
-  /* ---------- hero ---------- */
   const p = D.profile;
-  $("#hero").innerHTML = `
-    <p class="hero-greeting">${esc(p.greeting)} <span class="wave" id="wave">👋</span></p>
-    <h1 class="hero-name">${esc(p.name)}<span class="accent">.</span></h1>
-    <div class="hero-roles">${tags(p.roles, "role-chip")}</div>
-    <p class="hero-headline"><span class="accent">${esc(p.headline)}</span></p>
-    <p class="hero-tagline">${esc(p.tagline)}</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#projects">See my work ↓</a>
-      <a class="btn btn-ghost" href="${esc(p.links.github)}" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn btn-ghost" href="${esc(p.links.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
-    </div>`;
 
-  /* ---------- ticker ---------- */
-  const tickerWords = [...p.ticker, ...p.ticker] // duplicated for seamless loop
-    .map((w) => `<span>${esc(w)}</span><span class="dot">✦</span>`)
-    .join("");
-  $("#ticker").innerHTML = `<div class="ticker-track">${tickerWords}</div>`;
+  /* ---------- nav (all pages) ---------- */
+  const NAV = [
+    ["index.html", "home", "Home"],
+    ["projects.html", "projects", "Projects"],
+    ["research.html", "research", "Research"],
+    ["resume.html", "resume", "Resume"],
+    ["blog.html", "blog", "Blog"],
+  ];
+  $("#nav").innerHTML = `
+    <a class="nav-logo" href="index.html">SM<span class="accent">.</span></a>
+    <nav class="nav-links" id="nav-links">
+      ${NAV.map(([href, key, label]) =>
+        `<a href="${href}" ${key === page ? 'class="active"' : ""}>${label}</a>`).join("")}
+      <a href="index.html#contact" class="nav-cta">Contact</a>
+    </nav>
+    <button class="nav-burger" id="nav-burger" aria-label="Menu">☰</button>`;
 
-  /* ---------- about ---------- */
-  $("#about").innerHTML = `
-    ${sectionHead("01", "About me")}
-    <div class="about-grid">
-      <div class="about-text reveal">
-        ${p.about.map((par) => `<p>${esc(par)}</p>`).join("")}
+  /* ---------- hero (home) ---------- */
+  if ($("#hero")) {
+    $("#hero").innerHTML = `
+      <div class="hero-text">
+        <p class="hero-greeting">${esc(p.greeting)} <span class="wave" id="wave">👋</span></p>
+        <h1 class="hero-name">${esc(p.name)}<span class="accent">.</span></h1>
+        <div class="hero-roles">${tags(p.roles, "role-chip")}</div>
+        <p class="hero-headline"><span class="accent">${esc(p.headline)}</span></p>
+        <p class="hero-tagline">${esc(p.tagline)}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="projects.html">See my work →</a>
+          <a class="btn btn-ghost" href="${esc(p.links.github)}" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn btn-ghost" href="${esc(p.links.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
       </div>
-      <aside class="traits-card reveal">
-        <h3>How people describe me</h3>
-        <div class="traits">${tags(p.traits, "trait")}</div>
-        <div class="open-to"><b>Open to</b>${esc(p.openTo)}</div>
-      </aside>
-    </div>`;
+      <div class="hero-figure">
+        <div class="hero-avatar-frame">
+          <img src="${esc(p.avatar)}" alt="Illustration of ${esc(p.name)}"
+               onerror="this.closest('.hero-figure').style.display='none'" />
+        </div>
+      </div>`;
+  }
 
-  /* ---------- research & honors ---------- */
-  $("#research").innerHTML = `
-    ${sectionHead("02", "Research &amp; honors")}
-    <div class="ach-list">
-      ${D.achievements.map((a) => `
-        <article class="ach-card reveal">
-          <div class="ach-year">${esc(a.year)}</div>
-          <div>
+  /* ---------- stats strip (home) ---------- */
+  if ($("#stats") && p.stats) {
+    $("#stats").innerHTML = p.stats.map((s) => `
+      <div class="stat reveal">
+        <span class="stat-num">${esc(s.num)}</span>
+        <span class="stat-label">${esc(s.label)}</span>
+      </div>`).join("");
+  }
+
+  /* ---------- ticker (home) ---------- */
+  if ($("#ticker")) {
+    const words = [...p.ticker, ...p.ticker]
+      .map((w) => `<span>${esc(w)}</span><span class="dot">✦</span>`)
+      .join("");
+    $("#ticker").innerHTML = `<div class="ticker-track">${words}</div>`;
+  }
+
+  /* ---------- about (home) ---------- */
+  if ($("#about")) {
+    $("#about").innerHTML = `
+      ${sectionHead("01", "About me")}
+      <div class="about-grid">
+        <div class="about-text reveal">
+          ${p.about.map((par) => `<p>${esc(par)}</p>`).join("")}
+        </div>
+        <aside class="traits-card reveal">
+          <h3>How people describe me</h3>
+          <div class="traits">${tags(p.traits, "trait")}</div>
+          <div class="open-to"><b>Open to</b>${esc(p.openTo)}</div>
+        </aside>
+      </div>`;
+  }
+
+  /* ---------- achievement card (shared) ---------- */
+  const achCard = (a) => `
+    <article class="ach-card reveal">
+      <div class="ach-year">${esc(a.year)}</div>
+      <div>
+        <span class="ach-type ${esc(a.type)}">${a.type === "publication" ? "Publication" : "Award"}</span>
+        <h3 class="ach-title">${esc(a.title)}</h3>
+        <p class="ach-venue">${esc(a.venue)}</p>
+        <p class="ach-detail">${esc(a.detail)}</p>
+        ${a.link ? `<a class="ach-link" href="${esc(a.link)}" target="_blank" rel="noopener">View →</a>` : ""}
+      </div>
+    </article>`;
+
+  /* ---------- highlights (home: compact) ---------- */
+  if ($("#highlights")) {
+    const top = D.achievements.filter((a) => a.home);
+    $("#highlights").innerHTML = `
+      ${sectionHead("02", "Highlights")}
+      <div class="highlight-grid">
+        ${top.map((a) => `
+          <a class="highlight-card reveal" href="research.html">
             <span class="ach-type ${esc(a.type)}">${a.type === "publication" ? "Publication" : "Award"}</span>
-            <h3 class="ach-title">${esc(a.title)}</h3>
-            <p class="ach-venue">${esc(a.venue)}</p>
-            <p class="ach-detail">${esc(a.detail)}</p>
-            ${a.link ? `<a class="ach-link" href="${esc(a.link)}" target="_blank" rel="noopener">View →</a>` : ""}
-          </div>
-        </article>`).join("")}
-    </div>`;
+            <h3>${esc(a.title)}</h3>
+            <p>${esc(a.venue)} · ${esc(a.year)}</p>
+          </a>`).join("")}
+      </div>
+      <p class="see-more reveal"><a class="btn btn-ghost" href="research.html">Full research &amp; honors →</a></p>`;
+  }
 
-  /* ---------- projects ---------- */
-  const featured = D.projects.find((pr) => pr.featured);
-  const rest = D.projects.filter((pr) => !pr.featured);
-
+  /* ---------- project cards (shared) ---------- */
   const linkRow = (pr) => `
     <div class="project-links">
       ${pr.github ? `<a href="${esc(pr.github)}" target="_blank" rel="noopener">GitHub →</a>` : ""}
       ${pr.live ? `<a href="${esc(pr.live)}" target="_blank" rel="noopener">Live demo →</a>` : ""}
     </div>`;
 
-  $("#projects").innerHTML = `
-    ${sectionHead("03", "Projects")}
-    ${featured ? `
-      <div class="project-featured reveal">
-        <div class="project-featured-inner">
-          <span class="project-flag">★ Featured</span>
-          <h3>${esc(featured.title)}</h3>
-          <p class="blurb">${esc(featured.blurb)}</p>
-          ${featured.points ? `<ul class="project-points">${featured.points.map((pt) => `<li>${esc(pt)}</li>`).join("")}</ul>` : ""}
-          <div class="tech-tags">${tags(featured.tech, "tech-tag")}</div>
-          ${linkRow(featured)}
-        </div>
-      </div>` : ""}
-    <div class="projects-grid">
-      ${rest.map((pr) => `
-        <article class="project-card reveal">
-          <div class="project-card-top">
-            <h3>${esc(pr.title)}</h3>
-            <span class="project-year">${esc(pr.year)}</span>
-          </div>
-          <p class="blurb">${esc(pr.blurb)}</p>
-          <div class="tech-tags">${tags(pr.tech, "tech-tag")}</div>
-          ${linkRow(pr)}
-        </article>`).join("")}
+  const projectCard = (pr) => `
+    <article class="project-card reveal">
+      <div class="project-card-top">
+        <h3>${esc(pr.title)}</h3>
+        <span class="project-year">${esc(pr.year)}</span>
+      </div>
+      <p class="blurb">${esc(pr.blurb)}</p>
+      <div class="tech-tags">${tags(pr.tech, "tech-tag")}</div>
+      ${linkRow(pr)}
+    </article>`;
+
+  const featuredCard = (pr) => `
+    <div class="project-featured reveal">
+      <div class="project-featured-inner">
+        <span class="project-flag">★ Featured</span>
+        <h3>${esc(pr.title)}</h3>
+        <p class="blurb">${esc(pr.blurb)}</p>
+        ${pr.points ? `<ul class="project-points">${pr.points.map((pt) => `<li>${esc(pt)}</li>`).join("")}</ul>` : ""}
+        <div class="tech-tags">${tags(pr.tech, "tech-tag")}</div>
+        ${linkRow(pr)}
+      </div>
     </div>`;
 
-  /* ---------- experience ---------- */
-  $("#experience").innerHTML = `
-    ${sectionHead("04", "Experience")}
-    <div class="exp-list">
-      ${D.experience.map((e) => `
-        <article class="exp-card reveal">
-          <div class="exp-head">
-            <h3 class="exp-role">${esc(e.role)}</h3>
-            <span class="exp-period">${esc(e.period)}</span>
-          </div>
-          <p class="exp-org">${esc(e.org)}${e.where ? ` · ${esc(e.where)}` : ""}</p>
-          ${e.points ? `<ul class="exp-points">${e.points.map((pt) => `<li>${esc(pt)}</li>`).join("")}</ul>` : ""}
-          ${e.tech ? `<div class="tech-tags">${tags(e.tech, "tech-tag")}</div>` : ""}
-        </article>`).join("")}
-    </div>`;
+  /* ---------- featured projects (home: spotlight + picks) ---------- */
+  if ($("#projects-featured")) {
+    const featured = D.projects.find((pr) => pr.featured);
+    const picks = D.projects.filter((pr) => pr.home && !pr.featured);
+    $("#projects-featured").innerHTML = `
+      ${sectionHead("03", "Selected projects")}
+      ${featured ? featuredCard(featured) : ""}
+      <div class="projects-grid">${picks.map(projectCard).join("")}</div>
+      <p class="see-more reveal"><a class="btn btn-ghost" href="projects.html">All ${D.projects.length} projects →</a></p>`;
+  }
 
-  /* ---------- skills ---------- */
-  $("#skills").innerHTML = `
-    ${sectionHead("05", "Skills")}
-    <div class="skills-grid">
-      ${D.skills.map((g) => `
-        <div class="skill-group reveal">
-          <h3>${esc(g.group)}</h3>
-          <div class="skill-items">${tags(g.items, "skill-chip")}</div>
-        </div>`).join("")}
-    </div>`;
+  /* ---------- all projects, grouped (projects page) ---------- */
+  if ($("#projects-all")) {
+    const cats = D.projectCategories || [...new Set(D.projects.map((pr) => pr.category))];
+    $("#projects-all").innerHTML = cats.map((cat) => {
+      const list = D.projects.filter((pr) => pr.category === cat);
+      if (!list.length) return "";
+      const feat = list.find((pr) => pr.featured);
+      const rest = list.filter((pr) => !pr.featured);
+      return `
+        <h2 class="category-title reveal">${esc(cat)}</h2>
+        ${feat ? featuredCard(feat) : ""}
+        <div class="projects-grid">${rest.map(projectCard).join("")}</div>`;
+    }).join("");
+  }
 
-  /* ---------- education ---------- */
-  $("#education").innerHTML = `
-    ${sectionHead("06", "Education")}
-    <div class="edu-list">
-      ${D.education.map((e) => `
-        <article class="edu-card reveal">
-          <h3>${esc(e.school)}</h3>
-          <p class="edu-degree">${esc(e.degree)}</p>
-          <p class="edu-period">${esc(e.period)}</p>
-          ${e.note ? `<p class="edu-note">${esc(e.note)}</p>` : ""}
-        </article>`).join("")}
-    </div>`;
+  /* ---------- research page ---------- */
+  if ($("#research-all")) {
+    const pubs = D.achievements.filter((a) => a.type === "publication");
+    const awards = D.achievements.filter((a) => a.type === "award");
+    $("#research-all").innerHTML = `
+      <h2 class="category-title reveal">Publications</h2>
+      <div class="ach-list">${pubs.map(achCard).join("")}</div>
+      <h2 class="category-title reveal">Honors &amp; awards</h2>
+      <div class="ach-list">${awards.map(achCard).join("")}</div>`;
+  }
 
-  /* ---------- blog ---------- */
-  const posts = D.blog || [];
-  $("#blog").innerHTML = `
-    ${sectionHead("07", "Writing")}
-    ${posts.length === 0 ? `
+  /* ---------- experience (resume page) ---------- */
+  if ($("#experience")) {
+    $("#experience").innerHTML = `
+      ${sectionHead("01", "Experience")}
+      <div class="exp-list">
+        ${D.experience.map((e) => `
+          <article class="exp-card reveal">
+            <div class="exp-head">
+              <h3 class="exp-role">${esc(e.role)}</h3>
+              <span class="exp-period">${esc(e.period)}</span>
+            </div>
+            <p class="exp-org">${esc(e.org)}${e.where ? ` · ${esc(e.where)}` : ""}</p>
+            ${e.points ? `<ul class="exp-points">${e.points.map((pt) => `<li>${esc(pt)}</li>`).join("")}</ul>` : ""}
+            ${e.tech ? `<div class="tech-tags">${tags(e.tech, "tech-tag")}</div>` : ""}
+          </article>`).join("")}
+      </div>`;
+  }
+
+  /* ---------- skills (resume page) ---------- */
+  if ($("#skills")) {
+    $("#skills").innerHTML = `
+      ${sectionHead("02", "Skills")}
+      <div class="skills-grid">
+        ${D.skills.map((g) => `
+          <div class="skill-group reveal">
+            <h3>${esc(g.group)}</h3>
+            <div class="skill-items">${tags(g.items, "skill-chip")}</div>
+          </div>`).join("")}
+      </div>`;
+  }
+
+  /* ---------- education (resume page) ---------- */
+  if ($("#education")) {
+    $("#education").innerHTML = `
+      ${sectionHead("03", "Education")}
+      <div class="edu-list">
+        ${D.education.map((e) => `
+          <article class="edu-card reveal">
+            <h3>${esc(e.school)}</h3>
+            <p class="edu-degree">${esc(e.degree)}</p>
+            <p class="edu-period">${esc(e.period)}</p>
+            ${e.note ? `<p class="edu-note">${esc(e.note)}</p>` : ""}
+          </article>`).join("")}
+      </div>`;
+  }
+
+  /* ---------- certifications (resume page) ---------- */
+  if ($("#certs") && D.certifications) {
+    $("#certs").innerHTML = `
+      ${sectionHead("04", "Certifications &amp; courses")}
+      <div class="cert-list">
+        ${D.certifications.map((c) => `
+          <div class="cert-item reveal">
+            <span class="cert-name">${esc(c.name)}</span>
+            <span class="cert-org">${esc(c.org)}</span>
+          </div>`).join("")}
+      </div>`;
+  }
+
+  /* ---------- download CV button (resume page) ---------- */
+  if ($("#cv-download") && p.cv) {
+    $("#cv-download").innerHTML = `
+      <a class="btn btn-primary" href="${esc(p.cv)}" download>⬇ Download my CV (PDF)</a>`;
+  }
+
+  /* ---------- blog page ---------- */
+  if ($("#blog")) {
+    const posts = D.blog || [];
+    $("#blog").innerHTML = posts.length === 0 ? `
       <div class="blog-empty reveal">
         <span class="big">✍️</span>
         <p><b>First post loading…</b></p>
@@ -165,25 +274,29 @@
             <h3>${esc(b.title)}</h3>
             <p>${esc(b.summary)}</p>
           </a>`).join("")}
-      </div>`}`;
+      </div>`;
+  }
 
-  /* ---------- contact ---------- */
-  $("#contact").innerHTML = `
-    ${sectionHead("08", "Contact")}
-    <h2 class="contact-title reveal">Let's build something<br /><span class="accent">meaningful</span> together.</h2>
-    <p class="contact-sub reveal">${esc(p.openTo)} — or just say salaam. My inbox is open, and I reply.</p>
-    <div class="contact-links reveal">
-      <a class="btn btn-primary" href="mailto:${esc(p.email)}">✉️ ${esc(p.email)}</a>
-      <a class="btn btn-ghost" href="${esc(p.links.github)}" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn btn-ghost" href="${esc(p.links.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
-    </div>`;
+  /* ---------- contact (home) ---------- */
+  if ($("#contact")) {
+    $("#contact").innerHTML = `
+      ${sectionHead("04", "Contact")}
+      <h2 class="contact-title reveal">Let's build something<br /><span class="accent">meaningful</span> together.</h2>
+      <p class="contact-sub reveal">${esc(p.openTo)} — or just say salaam. My inbox is open, and I reply.</p>
+      <div class="contact-links reveal">
+        <a class="btn btn-primary" href="mailto:${esc(p.email)}">✉️ ${esc(p.email)}</a>
+        <a class="btn btn-ghost" href="${esc(p.links.github)}" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-ghost" href="${esc(p.links.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
+      </div>`;
+  }
 
-  /* ---------- footer ---------- */
+  /* ---------- footer (all pages) ---------- */
   $("#footer").innerHTML = `
     <p class="cat-line">Crafted with kindness, curiosity &amp; a serious love for cats
       <em class="cat" id="cat" title="pet the cat">🐈‍⬛</em>
     </p>
-    <p>© ${new Date().getFullYear()} ${esc(p.name)} · ${esc(p.location)}</p>`;
+    <p>© ${new Date().getFullYear()} ${esc(p.name)} · ${esc(p.location)} ·
+      <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>`;
 
   /* ============================================================
      Behaviour
@@ -195,7 +308,8 @@
   addEventListener("scroll", () => {
     nav.classList.toggle("scrolled", scrollY > 30);
     const h = document.documentElement;
-    progress.style.width = `${(h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100}%`;
+    const max = h.scrollHeight - h.clientHeight;
+    progress.style.width = max > 0 ? `${(h.scrollTop / max) * 100}%` : "0";
   }, { passive: true });
 
   // mobile menu

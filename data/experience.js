@@ -5,13 +5,13 @@ window.DATA = window.DATA || {};
 
 window.DATA.experience = [
   {
-    role: "Tech Solutions Architect",
-    org: "Green Lead",
+    role: "Junior Developer",
+    org: "Climate Intelligent Technologies (CIT) — tech team of Green Lead",
     period: "Apr 2026 — Present",
     where: "Remote",
     points: [
-      "Design and implement digital solutions supporting sustainability and community engagement initiatives",
-      "Improve platform functionality and UX, and build scalable systems facilitating climate action and youth empowerment",
+      "Contribute to climate-tech and sustainability-focused digital solutions through software development and technical implementation",
+      "Improve platform functionality and UX for systems supporting climate action and youth empowerment",
     ],
     tech: ["WordPress", "REST APIs", "MySQL"],
   },

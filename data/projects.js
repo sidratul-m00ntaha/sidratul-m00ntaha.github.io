@@ -139,5 +139,6 @@ window.DATA.projects = [
       "Eid card for CUET Islamic Ilm Seeker Society, logo submission for CUET CSE Fest 2025, and the official calendar for IEEE CUET Student Branch.",
     tech: ["Adobe Illustrator", "Canva"],
     github: "",
+    link: "design.html",
   },
 ];

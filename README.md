@@ -30,6 +30,7 @@ portfolio/
 | Add a job / internship | Add one object to `data/experience.js` |
 | Publish a blog post | Add one object to `data/blog.js` (see the comment in that file) |
 | Add a skill | Add a string in `data/skills.js` |
+| Add design work | Drop a web-sized image (≤1200px, ≤500KB) in `assets/designs/` + add one object to `data/designs.js` |
 | Change colors / fonts | Edit the `:root` variables at the top of `css/style.css` |
 
 No rebuild step — save the file, refresh the browser.

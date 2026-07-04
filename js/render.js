@@ -29,6 +29,7 @@
     ["index.html", "home", "Home"],
     ["projects.html", "projects", "Projects"],
     ["research.html", "research", "Research"],
+    ["design.html", "design", "Design"],
     ["resume.html", "resume", "Resume"],
     ["blog.html", "blog", "Blog"],
   ];
@@ -131,6 +132,7 @@
     <div class="project-links">
       ${pr.github ? `<a href="${esc(pr.github)}" target="_blank" rel="noopener">GitHub →</a>` : ""}
       ${pr.live ? `<a href="${esc(pr.live)}" target="_blank" rel="noopener">Live demo →</a>` : ""}
+      ${pr.link ? `<a href="${esc(pr.link)}">Gallery →</a>` : ""}
     </div>`;
 
   const projectCard = (pr) => `
@@ -256,6 +258,40 @@
   if ($("#cv-download") && p.cv) {
     $("#cv-download").innerHTML = `
       <a class="btn btn-primary" href="${esc(p.cv)}" download>⬇ Download my CV (PDF)</a>`;
+  }
+
+  /* ---------- design gallery (design page) ---------- */
+  if ($("#design-gallery") && D.designs) {
+    $("#design-gallery").innerHTML = `
+      <div class="design-grid">
+        ${D.designs.map((d, i) => `
+          <figure class="design-card reveal" data-index="${i}">
+            <img src="${esc(d.image)}" alt="${esc(d.title)}" loading="lazy" />
+            <figcaption>
+              <h3>${esc(d.title)}</h3>
+              <p>${esc(d.caption)}</p>
+              <span class="design-meta">${esc(d.tools)} · ${esc(d.year)}</span>
+            </figcaption>
+          </figure>`).join("")}
+      </div>`;
+
+    // lightbox
+    const lb = document.createElement("div");
+    lb.className = "lightbox";
+    lb.innerHTML = `<img alt="" /><p class="lightbox-caption"></p>`;
+    document.body.appendChild(lb);
+    $("#design-gallery").addEventListener("click", (e) => {
+      const card = e.target.closest(".design-card");
+      if (!card) return;
+      const d = D.designs[+card.dataset.index];
+      lb.querySelector("img").src = d.image;
+      lb.querySelector(".lightbox-caption").textContent = `${d.title} — ${d.caption}`;
+      lb.classList.add("open");
+    });
+    lb.addEventListener("click", () => lb.classList.remove("open"));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") lb.classList.remove("open");
+    });
   }
 
   /* ---------- blog page ---------- */

@@ -47,3 +47,18 @@ Just open `index.html` in a browser. (No server needed — there's no `fetch`.)
 4. Site goes live at **https://sidratul-m00ntaha.github.io** within a minute.
 
 Any later content change = edit a data file, commit, push. Done.
+
+## Everyday deploy routine
+
+1. Edit files (usually just `data/*.js`)
+2. Check locally: open `index.html` in the browser
+3. **Double-click `deploy.bat`** — it commits and pushes everything; live in ~1 minute
+
+Or by hand: `git add .` → `git commit -m "what changed"` → `git push`
+
+**If the deployment gets stuck** (Actions tab shows "queued" for 5+ min — rare GitHub
+glitch): make any tiny change, commit and push again. A fresh commit starts a fresh
+deployment run.
+
+**Images:** always resize before adding — max ~1200px wide, ideally under 500KB.
+Big originals (and `.ai` files) stay out of the repo.

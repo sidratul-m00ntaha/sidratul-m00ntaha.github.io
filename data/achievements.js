@@ -14,7 +14,7 @@ window.DATA.achievements = [
     venue: "LREC-COLING 2026 · CHiPSAL Shared Task",
     detail:
       "Late-fusion multimodal stacking framework combining textual, semantic and visual representations for sentiment analysis of Nepali text-embedded memes in a low-resource NLP setting. Macro F1 0.5045 on the official benchmark — 6th place internationally on the shared-task leaderboard.",
-    link: "https://github.com/sidratul-m00ntaha/NeuralNoodles-CHiPSAL-2026",
+    link: "https://doi.org/10.63317/5om43abhz5vy",
   },
   {
     type: "publication",
@@ -71,5 +71,8 @@ window.DATA.certifications = [
   { name: "Understanding Machine Learning", org: "DataCamp" },
   { name: "Python Certification", org: "Kaggle" },
   { name: "ChatGPT Prompt Engineering for Developers", org: "DeepLearning.AI" },
-  { name: "Phase 0: A Deep Introduction to Programming", org: "YouKn0wWho Academy" },
+  {
+    name: "Phase 0: A Deep Introduction to Programming",
+    org: "YouKn0wWho Academy",
+  },
 ];

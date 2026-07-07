@@ -22,21 +22,22 @@ window.DATA.designs = [
   },
   {
     title: "Eid Card",
-    caption: "Eid greeting card designed for CUET Islamic Ilm Seeker Society.",
+    caption:
+      "Eid greeting card designed for House of Language & Literature,CUET .",
     image: "assets/designs/eid-card.jpg",
     year: "2025",
     tools: "Adobe Illustrator",
   },
   {
     title: "Name Design",
-    caption: "Personal lettering & identity exploration.",
+    caption: "Hand-drawn style lettering of my name.",
     image: "assets/designs/name-design.jpg",
     year: "2025",
     tools: "Adobe Illustrator",
   },
   {
-    title: "Name Lettering",
-    caption: "Hand-drawn style lettering of my name.",
+    title: "Eid Card",
+    caption: "Eid greeting card designed for CUET Islamic Ilm Seeker Society.",
     image: "assets/designs/name-lettering.jpg",
     year: "2025",
     tools: "Adobe Illustrator",
